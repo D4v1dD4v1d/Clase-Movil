@@ -24,17 +24,31 @@ import com.example.reply.data.Email
 import com.example.reply.data.MailboxType
 import com.example.reply.ui.utils.ReplyNavigationType
 
-
 @Composable
 fun ReplyApp(
+    windowSize: WindowWidthSizeClass,
     modifier: Modifier = Modifier,
 ) {
+    val navigationType: ReplyNavigationType
     val viewModel: ReplyViewModel = viewModel()
     val replyUiState = viewModel.uiState.collectAsState().value
-    val navigationType =ReplyNavigationType.PERMANENT_NAVIGATION_DRAWER;
 
+    when (windowSize) {
+        WindowWidthSizeClass.Compact -> {
+            navigationType = ReplyNavigationType.BOTTOM_NAVIGATION
+        }
+        WindowWidthSizeClass.Medium -> {
+            navigationType = ReplyNavigationType.NAVIGATION_RAIL
+        }
+        WindowWidthSizeClass.Expanded -> {
+            navigationType = ReplyNavigationType.PERMANENT_NAVIGATION_DRAWER
+        }
+        else -> {
+            navigationType = ReplyNavigationType.BOTTOM_NAVIGATION
+        }
+    }
     ReplyHomeScreen(
-
+        navigationType = navigationType,
         replyUiState = replyUiState,
         onTabPressed = { mailboxType: MailboxType ->
             viewModel.updateCurrentMailbox(mailboxType = mailboxType)
@@ -48,23 +62,6 @@ fun ReplyApp(
         onDetailScreenBackPressed = {
             viewModel.resetHomeScreenStates()
         },
-        modifier = modifier,
-        navigationType = when (windowSize) {
-            WindowWidthSizeClass.Compact -> {
-                navigationType = ReplyNavigationType.BOTTOM_NAVIGATION
-            }
-
-            WindowWidthSizeClass.Medium -> {
-                navigationType = ReplyNavigationType.NAVIGATION_RAIL
-            }
-
-            WindowWidthSizeClass.Expanded -> {
-                navigationType = ReplyNavigationType.PERMANENT_NAVIGATION_DRAWER
-            }
-
-            else -> {
-                navigationType = ReplyNavigationType.BOTTOM_NAVIGATION
-            }
-        }
+        modifier = modifier
     )
 }
